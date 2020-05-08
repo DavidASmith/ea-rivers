@@ -1,0 +1,3 @@
+# Required packages
+pandas
+requests
