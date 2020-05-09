@@ -54,10 +54,10 @@ def get_measures():
 def get_readings_for_measure(measure_id):
     """Gets readings for a given measure from the EA river monitoring API
 
-      :param measure_id: text to be tokenized
+      :param measure_id: EA API measure id
       :return: a pandas data frame of readings for the measure
 
-      >>> get_readings_for_measure('the rain in spain')
+      >>> get_readings_for_measure('http://environment.data.gov.uk/flood-monitoring/id/measures/L0215-level-stage-i-15_min-m')
   """
     api_url = measure_id + "/readings"
     
