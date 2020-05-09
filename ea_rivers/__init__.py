@@ -37,7 +37,7 @@ def get_measures():
 
       :return: a pandas data frame of river monitoring measures
 
-      >>> get_stations()
+      >>> get_measures()
   """
     # Get data about measures from the EA API
     response = requests.get(api_url)
