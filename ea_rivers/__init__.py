@@ -33,7 +33,12 @@ def get_stations():
 
 def get_measures():
     api_url = "http://environment.data.gov.uk/flood-monitoring/id/measures"
-    
+    """Get details of measures available from river monitoring stations on the EA API
+
+      :return: a pandas data frame of river monitoring measures
+
+      >>> get_stations()
+  """
     # Get data about measures from the EA API
     response = requests.get(api_url)
 
