@@ -8,18 +8,67 @@ Created on Fri May  8 11:25:31 2020
 import pandas as pd
 import requests
 
-def get_stations():
+def get_stations(parameter_name = None,
+                         parameter = None,
+                         qualifier = None,
+                         label = None,
+                         town = None,
+                         catchment_name = None,
+                         river_name = None,
+                         station_reference = None,
+                         rloi_id = None,
+                         search = None,
+                         lat = None,
+                         long = None,
+                         d = None,
+                         type = None,
+                         status = None):
     """Get details of river monitoring stations from EA API
+      :param parameter_name: Return only those stations which measure parameters with the given name, for example Water Level or Flow.
+      :param parameter: Return only those stations which measure parameters with the given short form name, for example level or flow.
+      :param qualifier: Return only those stations which measure parameters with qualifier. Useful qualifiers are Stage and Downstream Stage (for stations such as weirs which measure levels at two locations), Groundwater for groundwater levels as opposed to river levels and Tidal Level for tidal levels.
+      :param label: Return only those stations whose label is exactly as given.
+      :param town: Return only those stations whose town is as given. Not all stations have an associated town.
+      :param catchment_name: Return only those stations whose catchment name is exactly as given. Not all stations have an associated catchment area.
+      :param river_name: Return only those stations whose river name is exactly as given. Not all stations have an associated river name.
+      :param station_reference: Return only those stations whose reference identifier is as given. The station reference is an internal identifier used by the Environment Agency.
+      :param rloi_id: Return only the station (if there is one) whose RLOIid (River Levels on the Internet identifier) matches.
+      :param search: Return only those stations whose label contains the given value.
+      :param lat: Return those stations whose location falls within d km of the given latitude/longitude (in WGS84 coordinates), this may be approximated by a bounding box.
+      :param long: Return those stations whose location falls within d km of the given latitude/longitude (in WGS84 coordinates), this may be approximated by a bounding box.
+      :param d: Return those stations whose location falls within d km of the given latitude/longitude (in WGS84 coordinates), this may be approximated by a bounding box.
+      :param type: Return only those stations of the given type, where type can be one of "SingleLevel", "MultiTraceLevel", "Coastal", "Groundwater" or "Meteorological"
+      :param status: Return only those stations with the given status. Can be one of "Active", "Closed" or "Suspended".
 
       :return: a pandas data frame of river monitoring stations
 
       >>> get_stations()
   """
-    
+
+  
     api_url = "https://environment.data.gov.uk/flood-monitoring/id/stations"
+ 
+    # Build dictionary of query params from arguments
+    params = {'parameterName': parameter_name,
+    'parameter': parameter,
+    'qualifier': qualifier,
+    'label': label,
+    'town': town,
+    'catchmentName': catchment_name,
+    'riverName': river_name,
+    'stationReference': station_reference,
+    'RLOIid': rloi_id,
+    'search': search,
+    'lat': lat,
+    'long': long,
+    'dist': d,
+    'type': type,
+    'status': status
+}
     
     # Get data about stations from the EA API
-    response = requests.get(api_url)
+    response = requests.get(api_url, 
+                            params = params)
 
     # Extract JSON data from the response
     data = response.json()
