@@ -24,6 +24,7 @@ def get_stations(parameter_name = None,
                          type = None,
                          status = None):
     """Get details of river monitoring stations from EA API
+    
       :param parameter_name: Return only those stations which measure parameters with the given name, for example Water Level or Flow.
       :param parameter: Return only those stations which measure parameters with the given short form name, for example level or flow.
       :param qualifier: Return only those stations which measure parameters with qualifier. Useful qualifiers are Stage and Downstream Stage (for stations such as weirs which measure levels at two locations), Groundwater for groundwater levels as opposed to river levels and Tidal Level for tidal levels.
@@ -64,7 +65,7 @@ def get_stations(parameter_name = None,
     'dist': d,
     'type': type,
     'status': status
-}
+    }
     
     # Get data about stations from the EA API
     response = requests.get(api_url, 
@@ -80,16 +81,39 @@ def get_stations(parameter_name = None,
 
 
 
-def get_measures():
-    api_url = "http://environment.data.gov.uk/flood-monitoring/id/measures"
+def get_measures(parameter_name = None,
+                 parameter = None,
+                 qualifier = None,
+                 station_reference = None,
+                 station = None,
+                 search = None):
     """Get details of measures available from river monitoring stations on the EA API
 
-      :return: a pandas data frame of river monitoring measures
+       :param parameter_name: Return only measures for parameters with the given name, for example Water Level or Flow.
+       :param parameter: Return only measures for parameters with the given short form name, for example level or flow.
+       :param qualifier: Return only those measures with qualifier. Useful qualifiers are Stage and Downstream Stage (for stations such as weirs which measure levels at two locations), Groundwater for groundwater levels as opposed to river levels and Tidal Level for tidal levels.
+       :param station_reference: Return only those measures which are available from the station with the given reference identifier.
+       :param station: Return only those measures which are available from the station with the given URI.
+       :param search: Return only those measures whose label contains the given value.
 
-      >>> get_measures()
-  """
+       :return: a pandas data frame of river monitoring measures
+
+       >>> get_measures()
+    """
+    api_url = "http://environment.data.gov.uk/flood-monitoring/id/measures"
+    
+     # Build dictionary of query params from arguments
+    params = {'parameterName': parameter_name,
+    'parameter': parameter,
+    'qualifier': qualifier,
+    'stationReference': station_reference,
+    'station': station,
+    'search': search
+    }
+    
     # Get data about measures from the EA API
-    response = requests.get(api_url)
+    response = requests.get(api_url, 
+                            params)
 
     # Extract JSON data from the response
     data = response.json()
