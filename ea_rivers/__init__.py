@@ -24,6 +24,7 @@ def get_stations(parameter_name = None,
                          type = None,
                          status = None):
     """Get details of river monitoring stations from EA API
+    
       :param parameter_name: Return only those stations which measure parameters with the given name, for example Water Level or Flow.
       :param parameter: Return only those stations which measure parameters with the given short form name, for example level or flow.
       :param qualifier: Return only those stations which measure parameters with qualifier. Useful qualifiers are Stage and Downstream Stage (for stations such as weirs which measure levels at two locations), Groundwater for groundwater levels as opposed to river levels and Tidal Level for tidal levels.
@@ -64,7 +65,7 @@ def get_stations(parameter_name = None,
     'dist': d,
     'type': type,
     'status': status
-}
+    }
     
     # Get data about stations from the EA API
     response = requests.get(api_url, 
@@ -80,16 +81,39 @@ def get_stations(parameter_name = None,
 
 
 
-def get_measures():
-    api_url = "http://environment.data.gov.uk/flood-monitoring/id/measures"
+def get_measures(parameter_name = None,
+                 parameter = None,
+                 qualifier = None,
+                 station_reference = None,
+                 station = None,
+                 search = None):
     """Get details of measures available from river monitoring stations on the EA API
 
-      :return: a pandas data frame of river monitoring measures
+       :param parameter_name: Return only measures for parameters with the given name, for example Water Level or Flow.
+       :param parameter: Return only measures for parameters with the given short form name, for example level or flow.
+       :param qualifier: Return only those measures with qualifier. Useful qualifiers are Stage and Downstream Stage (for stations such as weirs which measure levels at two locations), Groundwater for groundwater levels as opposed to river levels and Tidal Level for tidal levels.
+       :param station_reference: Return only those measures which are available from the station with the given reference identifier.
+       :param station: Return only those measures which are available from the station with the given URI.
+       :param search: Return only those measures whose label contains the given value.
 
-      >>> get_measures()
-  """
+       :return: a pandas data frame of river monitoring measures
+
+       >>> get_measures()
+    """
+    api_url = "http://environment.data.gov.uk/flood-monitoring/id/measures"
+    
+     # Build dictionary of query params from arguments
+    params = {'parameterName': parameter_name,
+    'parameter': parameter,
+    'qualifier': qualifier,
+    'stationReference': station_reference,
+    'station': station,
+    'search': search
+    }
+    
     # Get data about measures from the EA API
-    response = requests.get(api_url)
+    response = requests.get(api_url, 
+                            params)
 
     # Extract JSON data from the response
     data = response.json()
@@ -100,18 +124,63 @@ def get_measures():
     return(measures)
     
 
-def get_readings_for_measure(measure_id):
+def get_readings_for_measure(measure_id, 
+                             limit = None,
+                             date = None, 
+                             startdate = None, 
+                             enddate = None,
+                             since = None, 
+                             latest = False,
+                             today = False, 
+                             sorted = True):
     """Gets readings for a given measure from the EA river monitoring API
 
       :param measure_id: EA API measure id
+      :param limit: Maximum number of records to return. Defaults to 500. Max 10000.
+      :param date: Return all the readings taken on the specified day.
+      :param startdate: Return the readings taken on the specified range of days. Date format 2020-02-17.
+      :param enddate: Return the readings taken on the specified range of days. Date format 2020-02-17.
+      :param since: Return the readings taken since the given date time (not inclusive), up to the specified limit. If no limit is given then a default limit of 500 will be used. Typically when tracking a particular measurement then use the dateTime of the last retrieved value as the since parameter to find any new readings. Will accept a simple date value such as 2016-09-07 which will be interpreted as 2016-09-07T:00:00:00Z. The latter (with timestamp) is also accepted.
+      :param latest: Return only the latest reading.
+      :param today: Return only all readings from today.
+      :param sorted: Order the array of returned readings into descending order by date, this done before the limits is applied thus enabling you to fetch the most recent n readings.
+      
       :return: a pandas data frame of readings for the measure
 
       >>> get_readings_for_measure('http://environment.data.gov.uk/flood-monitoring/id/measures/L0215-level-stage-i-15_min-m')
   """
+    # Set True/False argument to blank or None so handled correctly in params to requests.get
+    if latest:
+        latest = ''
+    else:
+        latest = None
+        
+    if today:
+        today = ''
+    else:
+        today = None
+  
+    if sorted:
+        sorted = ''
+    else:
+        sorted = None
+    
+    # Build dictionary of query params from arguments
+    params = {'_limit': limit,
+    'date': date,
+    'startdate': startdate,
+    'enddate': enddate,
+    'since': since, 
+    'latest': latest,
+    'today': today,
+    '_sorted': sorted
+    }
+  
     api_url = measure_id + "/readings"
     
     # Get data about readings from the EA API
-    response = requests.get(api_url)
+    response = requests.get(api_url, 
+                            params)
 
     # Extract JSON data from the response
     data = response.json()
