@@ -12,4 +12,17 @@ There are three main concepts in the package and API.
 
 ## Getting started
 
-## License
+Get details of all available monitoring stations.
+
+    ea_rivers.get_stations()
+
+Get details of all available measures.
+
+    ea_rivers.get_measures().
+    
+Get details of all available readings for a given measure from today.
+
+    ea_rivers.get_readings_for_measure('http://environment.data.gov.uk/flood-monitoring/id/measures/L0215-level-stage-i-15_min-m', 
+                                       today = True)
+
+All data is returned as Pandas DataFrame.
